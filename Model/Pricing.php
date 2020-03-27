@@ -25,6 +25,11 @@ class Pricing
      */
     public function getProductSubtotal(string $code, int $qty): float
     {
+        // ensure we have price data for at least single qtys of this item
+        if (!isset($this->priceData[$code][1])) {
+            return 0;
+        }
+
         // determine tier qty requirement
         $tierQty = max(array_keys($this->priceData[$code]));
 
@@ -32,7 +37,7 @@ class Pricing
         $groups = (int)floor($qty / $tierQty);
         $singles = $qty % $tierQty;
 
-        // multiple groups by tier price and single by single price and return the sum
+        // multiply groups by tier price and singles by single price and return the sum
         return ($groups * (float)$this->priceData[$code][$tierQty]) + ($singles * (float)$this->priceData[$code][1]);
     }
 
